@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Reclamos - Mi Plaza Segura{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
 <section class="page-heading">
     <div class="heading-sign"><h1>RECLAMOS</h1></div>
     <p>Informá sobre problemas que encuentres en las plazas de Las Heras.</p>
@@ -89,4 +91,169 @@
         {% endif %}
     </aside>
 </section>
+
+<section class="green-map-panel" aria-labelledby="green-map-title">
+    <div class="green-map-heading">
+        <div>
+            <span class="map-kicker">LAS HERAS · MENDOZA</span>
+            <h2 id="green-map-title">Plazas y espacios verdes</h2>
+        </div>
+        <span class="map-count" id="green-map-count">Cargando...</span>
+    </div>
+
+    <div class="map-toolbar" aria-label="Filtrar espacios verdes">
+        <button type="button" class="map-filter active" data-filter="todos">Todos</button>
+        <button type="button" class="map-filter" data-filter="plaza">Plazas</button>
+        <button type="button" class="map-filter" data-filter="parque">Parques</button>
+        <button type="button" class="map-filter" data-filter="verde">Espacios verdes</button>
+    </div>
+
+    <div id="las-heras-map" class="las-heras-map"
+        role="application"
+        aria-label="Mapa interactivo de plazas, parques y espacios verdes de Las Heras"></div>
+</section>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    if (!window.L) return;
+
+    const map = L.map("las-heras-map", {
+        scrollWheelZoom: false
+    }).setView([-32.842, -68.825], 12);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'
+    }).addTo(map);
+
+    const fallbackSpaces = [
+        { name: "Plaza Departamental Las Heras", lat: -32.842, lng: -68.824, type: "plaza" },
+        { name: "Plaza El Plumerillo", lat: -32.835, lng: -68.842, type: "plaza" },
+        { name: "Plaza San Martín", lat: -32.849, lng: -68.823, type: "plaza" },
+        { name: "Espacio verde - Parque Central", lat: -32.832, lng: -68.803, type: "parque" },
+        { name: "Espacio verde - Cruz de Piedra", lat: -32.802, lng: -68.868, type: "verde" },
+        { name: "Espacio verde - El Challao", lat: -32.867, lng: -68.885, type: "verde" },
+        { name: "Parque Marcos Burgos", lat: -32.850109093388724, lng: -68.84077774348505, type: "parque" },
+        { name: "Parque de la Niñez", lat: -32.84125584663903, lng: -68.80262851280186, type: "parque" },
+    ];
+
+    const icons = {
+        plaza: L.divIcon({ className: "green-marker green-marker-plaza", html: "🏛️", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] }),
+        parque: L.divIcon({ className: "green-marker green-marker-parque", html: "🌳", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] }),
+        verde: L.divIcon({ className: "green-marker green-marker-verde", html: "🌿", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] })
+    };
+
+    let markers = [];
+    let activeFilter = "todos";
+
+    const labelForType = (type) => ({
+        plaza: "Plaza",
+        parque: "Parque",
+        verde: "Espacio verde"
+    }[type] || "Espacio verde");
+
+    function renderSpaces(spaces) {
+        markers.forEach((marker) => map.removeLayer(marker));
+        markers = [];
+
+        const visible = spaces.filter((space) =>
+            activeFilter === "todos" || space.type === activeFilter
+        );
+
+        visible.forEach((space) => {
+            const marker = L.marker([space.lat, space.lng], { icon: icons[space.type] || icons.verde })
+                .bindPopup(`<strong>${space.name}</strong><br><span>${labelForType(space.type)}</span>`);
+            marker.addTo(map);
+            markers.push(marker);
+        });
+
+        document.getElementById("green-map-count").textContent =
+            `${visible.length} ${visible.length === 1 ? "espacio encontrado" : "espacios encontrados"}`;
+
+        if (markers.length) {
+            const group = L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.18), { maxZoom: 14 });
+        }
+    }
+
+    async function loadOpenStreetMapSpaces() {
+        const query = `
+            [out:json][timeout:12];
+            area["boundary"="administrative"]["name"="Las Heras"]->.area;
+            (
+              nwr["leisure"~"park|garden|playground"](area);
+              nwr["landuse"="grass"](area);
+              nwr["leisure"="common"](area);
+            );
+            out center;
+        `;
+
+        try {
+            const response = await fetch("https://overpass-api.de/api/interpreter", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+                body: new URLSearchParams({ data: query })
+            });
+            if (!response.ok) throw new Error("No se pudo consultar el mapa");
+
+            const data = await response.json();
+            const spaces = data.elements
+                .map((element) => {
+                    const lat = element.lat || element.center?.lat;
+                    const lng = element.lon || element.center?.lon;
+                    if (!lat || !lng) return null;
+
+                    const tags = element.tags || {};
+                    const leisure = tags.leisure;
+                    let type = "verde";
+                    if (tags.name && /plaza/i.test(tags.name)) type = "plaza";
+                    else if (leisure === "park") type = "parque";
+                    else if (leisure === "garden" || leisure === "common") type = "verde";
+
+                    return {
+                        name: tags.name || (type === "plaza" ? "Plaza" : type === "parque" ? "Parque" : "Espacio verde"),
+                        lat,
+                        lng,
+                        type
+                    };
+                })
+                .filter(Boolean)
+                .slice(0, 80);
+
+            if (spaces.length) {
+                const spacesWithKnownParks = [
+                    ...spaces.filter((space) =>
+                        !/parque de la niñez|parque de la ninez|marcos burgos/i.test(space.name)
+                    ),
+                    ...fallbackSpaces.filter((space) =>
+                        /parque de la niñez|parque de la ninez|marcos burgos/i.test(space.name)
+                    )
+                ];
+                window.loadedGreenSpaces = spacesWithKnownParks;
+                renderSpaces(spacesWithKnownParks);
+            } else {
+                window.loadedGreenSpaces = fallbackSpaces;
+                renderSpaces(fallbackSpaces);
+            }
+        } catch (error) {
+            window.loadedGreenSpaces = fallbackSpaces;
+            renderSpaces(fallbackSpaces);
+        }
+    }
+
+    document.querySelectorAll(".map-filter").forEach((button) => {
+        button.addEventListener("click", () => {
+            document.querySelectorAll(".map-filter").forEach((item) => item.classList.remove("active"));
+            button.classList.add("active");
+            activeFilter = button.dataset.filter;
+            renderSpaces(window.loadedGreenSpaces || fallbackSpaces);
+        });
+    });
+
+    window.loadedGreenSpaces = fallbackSpaces;
+    renderSpaces(fallbackSpaces);
+    loadOpenStreetMapSpaces();
+});
+</script>
 {% endblock %}

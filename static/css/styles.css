@@ -314,6 +314,79 @@ h1, h2, h3, .brand, .pixel-button, .heading-sign, .wood-sign h1 {
 .empty-state { min-height: 170px; display: grid; place-content: center; text-align: center; color: #687163; }
 .empty-state div { font-size: 38px; }
 
+.green-map-panel {
+    max-width: 1132px;
+    margin: 0 auto 70px;
+    padding: 20px;
+    background: #fffdf0;
+    border: 5px solid #4b3a29;
+    box-shadow: 8px 8px 0 #bdac7d;
+}
+.green-map-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+.green-map-heading h2 {
+    margin: 5px 0 0;
+    color: #315d32;
+    font-size: 17px;
+    line-height: 1.5;
+}
+.map-kicker {
+    color: #687163;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+.map-count {
+    flex: none;
+    padding: 8px 10px;
+    background: #dceaa6;
+    border: 3px solid #4b3a29;
+    font-size: 12px;
+    font-weight: 800;
+}
+.map-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.map-filter {
+    padding: 8px 12px;
+    background: #edf5c9;
+    border: 3px solid #74664e;
+    color: #315d32;
+    font: 800 14px "Nunito", sans-serif;
+    cursor: pointer;
+}
+.map-filter.active {
+    background: #78bd43;
+    border-color: #4b3a29;
+    color: #fff;
+}
+.las-heras-map {
+    width: 100%;
+    height: 430px;
+    border: 4px solid #4b3a29;
+    background: #dceaa6;
+}
+.green-marker {
+    display: grid;
+    place-items: center;
+    border: 3px solid #4b3a29;
+    border-radius: 50%;
+    box-shadow: 3px 3px 0 rgba(49, 94, 46, .55);
+    font-size: 18px;
+}
+.green-marker-plaza { background: #ffe27a; }
+.green-marker-parque { background: #78bd43; }
+.green-marker-verde { background: #91c9eb; }
+.leaflet-popup-content strong { color: #315d32; }
+
 .about-layout { max-width: 1180px; margin: auto; padding: 42px 24px 70px; }
 .team-card { display: grid; grid-template-columns: 42% 58%; overflow: hidden; }
 .team-photo { min-height: 430px; background: #94cbe8; border-right: 5px solid #4b3a29; }
@@ -383,6 +456,12 @@ h1, h2, h3, .brand, .pixel-button, .heading-sign, .wood-sign h1 {
     .cloud-two { display: none; }
     .category-grid, .reclamos-layout { grid-template-columns: 1fr; }
     .category-card { min-height: 190px; }
+    .green-map-panel {
+        margin: 0 24px 50px;
+        padding: 14px;
+    }
+    .las-heras-map { height: 380px; }
+    .green-map-heading { align-items: flex-start; }
     .team-card { grid-template-columns: 1fr; }
     .team-photo { min-height: 320px; border-right: 0; border-bottom: 5px solid #4b3a29; }
     .photo-placeholder { min-height: 320px; }
@@ -394,6 +473,11 @@ h1, h2, h3, .brand, .pixel-button, .heading-sign, .wood-sign h1 {
     .hero-copy { font-size: 16px; }
     .category-section, .reclamos-layout, .about-layout { padding-left: 14px; padding-right: 14px; }
     .form-panel, .edit-panel { padding: 18px 14px; }
+    .green-map-panel { margin: 0 14px 40px; }
+    .las-heras-map { height: 330px; }
+    .green-map-heading { display: block; }
+    .map-count { display: inline-block; margin-top: 8px; }
+    .map-filter { flex: 1 1 calc(50% - 8px); }
     .team-copy { padding: 22px 18px; }
     .edit-link { display: block; margin: 16px 0 0; }
 }
