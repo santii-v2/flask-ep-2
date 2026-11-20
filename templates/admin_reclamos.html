@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Administración - Mi Plaza Segura{% endblock %}
+{% block content %}
+<section class="page-heading">
+    <div class="heading-sign"><h1>GESTIÓN</h1></div>
+    <p>Panel protegido de reclamos.</p>
+</section>
+<section class="admin-panel">
+    {% if reclamos %}
+        <div class="admin-table">
+            {% for reclamo in reclamos %}
+                <article class="admin-row">
+                    <div>
+                        <strong>#{{ reclamo.id }} - {{ reclamo.plaza }}</strong>
+                        <p>{{ reclamo.categoria }} · {{ reclamo.ubicacion }}</p>
+                        <small>{{ reclamo.descripcion }}</small>
+                        <p><small>Reporta: {{ reclamo.nombre }}</small></p>
+                    </div>
+                    <form method="post" action="{{ url_for('cambiar_estado', reclamo_id=reclamo.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <label for="estado-{{ reclamo.id }}">Estado</label>
+                        <select id="estado-{{ reclamo.id }}" name="estado">
+                            {% for estado in ['Pendiente', 'En proceso', 'Resuelto'] %}
+                                <option value="{{ estado }}" {% if reclamo.estado == estado %}selected{% endif %}>{{ estado }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit">Actualizar</button>
+                    </form>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state"><p>No hay reclamos para gestionar.</p></div>
+    {% endif %}
+</section>
+{% endblock %}

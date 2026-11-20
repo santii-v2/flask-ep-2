@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Reclamos - Mi Plaza Segura{% endblock %}
+{% block content %}
+<section class="page-heading">
+    <div class="heading-sign"><h1>RECLAMOS</h1></div>
+    <p>Informá sobre problemas que encuentres en las plazas de Las Heras.</p>
+</section>
+
+<section class="reclamos-layout">
+    <div class="form-panel">
+        <h2>Nuevo reporte</h2>
+        <form method="post" enctype="multipart/form-data" novalidate id="reclamo-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="field">
+                <label for="nombre">Nombre del vecino <span>(opcional)</span></label>
+                <input id="nombre" name="nombre" type="text" maxlength="100" value="{{ values.get('nombre', '') }}" placeholder="Ej: Ana Pérez">
+                {% if errors.get('nombre') %}<small class="error">{{ errors['nombre'] }}</small>{% endif %}
+            </div>
+
+            <div class="field">
+                <label for="plaza">Nombre de la plaza <span class="required">*</span></label>
+                <input class="{{ 'invalid' if errors.get('plaza') }}" id="plaza" name="plaza" type="text" maxlength="120" value="{{ values.get('plaza', '') }}" required>
+                {% if errors.get('plaza') %}<small class="error">{{ errors['plaza'] }}</small>{% endif %}
+            </div>
+
+            <div class="field">
+                <label for="ubicacion">Dirección o ubicación <span class="required">*</span></label>
+                <input class="{{ 'invalid' if errors.get('ubicacion') }}" id="ubicacion" name="ubicacion" type="text" maxlength="200" value="{{ values.get('ubicacion', '') }}" required>
+                {% if errors.get('ubicacion') %}<small class="error">{{ errors['ubicacion'] }}</small>{% endif %}
+            </div>
+
+            <div class="field">
+                <label for="categoria">Categoría <span class="required">*</span></label>
+                <select class="{{ 'invalid' if errors.get('categoria') }}" id="categoria" name="categoria" required>
+                    <option value="">Seleccioná una categoría</option>
+                    {% for categoria in categorias %}
+                        <option value="{{ categoria }}" {% if values.get('categoria') == categoria %}selected{% endif %}>{{ categoria }}</option>
+                    {% endfor %}
+                </select>
+                {% if errors.get('categoria') %}<small class="error">{{ errors['categoria'] }}</small>{% endif %}
+            </div>
+
+            <div class="field">
+                <label for="descripcion">Descripción del problema <span class="required">*</span></label>
+                <textarea class="{{ 'invalid' if errors.get('descripcion') }}" id="descripcion" name="descripcion" maxlength="1500" rows="5" required>{{ values.get('descripcion', '') }}</textarea>
+                <small class="counter"><span id="char-count">0</span>/1500</small>
+                {% if errors.get('descripcion') %}<small class="error">{{ errors['descripcion'] }}</small>{% endif %}
+            </div>
+
+            <div class="field">
+                <label for="fotografia">Fotografía <span>(opcional)</span></label>
+                <input id="fotografia" name="fotografia" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                <small>JPG, PNG o WebP · máximo 3 MB</small>
+                {% if errors.get('fotografia') %}<small class="error">{{ errors['fotografia'] }}</small>{% endif %}
+                <div id="image-preview" class="image-preview" hidden></div>
+            </div>
+
+            <button class="pixel-button pixel-button-green" type="submit">ENVIAR RECLAMO</button>
+        </form>
+    </div>
+
+    <aside class="reports-panel">
+        <h2>Reportes activos <span>{{ reclamos|length }}</span></h2>
+        {% if reclamos %}
+            <div class="report-list">
+                {% for reclamo in reclamos|reverse %}
+                    <article class="report-card">
+                        <div class="report-top">
+                            <strong>#{{ reclamo.id }} · {{ reclamo.plaza }}</strong>
+                            <span class="status status-{{ reclamo.estado|lower|replace(' ', '-') }}">{{ reclamo.estado }}</span>
+                        </div>
+                        <p class="report-category">{{ reclamo.categoria }} · {{ reclamo.fecha }}</p>
+                        <p>{{ reclamo.descripcion }}</p>
+                        <small>📍 {{ reclamo.ubicacion }}</small>
+                        {% if reclamo.fotografia %}
+                            <a class="report-photo" href="{{ url_for('uploaded_file', filename=reclamo.fotografia) }}" target="_blank" rel="noopener">
+                                Ver fotografía
+                            </a>
+                        {% endif %}
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div aria-hidden="true">📋</div>
+                <p>Aún no hay reclamos registrados.</p>
+            </div>
+        {% endif %}
+    </aside>
+</section>
+{% endblock %}

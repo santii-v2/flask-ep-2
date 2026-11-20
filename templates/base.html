@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Mi Plaza Segura - Reclamos vecinales de Las Heras">
+    <title>{% block title %}Mi Plaza Segura{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="min-h-screen flex flex-col">
+    <header class="site-header">
+        <nav class="nav-shell" aria-label="Navegación principal">
+            <a class="brand" href="{{ url_for('index') }}" aria-label="Ir al inicio">
+                <img class="brand-icon" src="{{ url_for('static', filename='uploads/Icono.png') }}" alt="" aria-hidden="true">
+                <span>MI PLAZA SEGURA</span>
+            </a>
+            <button class="menu-button" id="menu-button" type="button" aria-expanded="false" aria-controls="main-menu">
+                <span></span><span></span><span></span>
+                <span class="sr-only">Abrir menú</span>
+            </button>
+            <div class="nav-links" id="main-menu">
+                <a class="{{ 'active' if active_page == 'index' else '' }}" href="{{ url_for('index') }}">Inicio</a>
+                <a class="{{ 'active' if active_page == 'reclamos_view' else '' }}" href="{{ url_for('reclamos_view') }}">Reclamos</a>
+                <a class="{{ 'active' if active_page == 'sobre_nosotros' else '' }}" href="{{ url_for('sobre_nosotros') }}">Sobre nosotros</a>
+            </div>
+        </nav>
+    </header>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-wrap" role="status" aria-live="polite">
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main class="flex-1">{% block content %}{% endblock %}</main>
+
+    <footer class="site-footer">
+        <p><span aria-hidden="true">🌿</span> Mi Plaza Segura · Las Heras, Mendoza</p>
+    </footer>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Inicio - Mi Plaza Segura{% endblock %}
+{% block content %}
+<section class="hero-scene">
+    <div class="cloud cloud-one"></div>
+    <div class="cloud cloud-two"></div>
+    <div class="hero-content">
+        <div class="wood-sign">
+            <span class="sign-nail left"></span>
+            <h1>MI PLAZA SEGURA</h1>
+            <span class="sign-nail right"></span>
+        </div>
+        <p class="hero-copy">Entre todos podemos construir plazas más seguras, limpias y cuidadas para nuestra comunidad.</p>
+        <a class="pixel-button pixel-button-yellow" href="{{ url_for('reclamos_view') }}">RECLAMOS</a>
+    </div>
+    <div class="decor-tree tree-left"><span></span></div>
+    <div class="decor-tree tree-right"><span></span></div>
+    <div class="ground-strip"></div>
+</section>
+
+<section class="category-section">
+    <h2>¿QUÉ QUEREMOS MEJORAR?</h2>
+    <div class="category-grid">
+        <article class="category-card security-card">
+            <div class="category-icon" aria-hidden="true">🛡️</div>
+            <h3>Seguridad</h3>
+            <p>Iluminación, vandalismo y situaciones peligrosas.</p>
+        </article>
+        <article class="category-card cleaning-card">
+            <div class="category-icon" aria-hidden="true">♻️</div>
+            <h3>Limpieza</h3>
+            <p>Residuos, basurales y mantenimiento.</p>
+        </article>
+        <article class="category-card infra-card">
+            <div class="category-icon" aria-hidden="true">🏗️</div>
+            <h3>Infraestructura</h3>
+            <p>Bancos, juegos, veredas y espacios deteriorados.</p>
+        </article>
+    </div>
+</section>
+{% endblock %}

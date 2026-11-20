@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Error {{ codigo }} - Mi Plaza Segura{% endblock %}
+{% block content %}
+<section class="error-page">
+    <div class="error-card">
+        <span>{{ codigo }}</span>
+        <h1>{{ mensaje }}</h1>
+        <a class="pixel-button pixel-button-green" href="{{ url_for('index') }}">VOLVER AL INICIO</a>
+    </div>
+</section>
+{% endblock %}

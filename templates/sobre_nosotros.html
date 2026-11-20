@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Sobre Nosotros - Mi Plaza Segura{% endblock %}
+{% block content %}
+<section class="page-heading about-heading">
+    <div class="heading-sign"><h1>SOBRE NOSOTROS</h1></div>
+</section>
+
+<section class="about-layout">
+    {% if editar %}
+        <div class="edit-panel">
+            <h2>Editar presentación</h2>
+            {% if errors.general %}<p class="error">{{ errors.general }}</p>{% endif %}
+            <form method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="field">
+                    <label for="titulo">Título</label>
+                    <input id="titulo" name="titulo" value="{{ equipo.titulo }}" required>
+                </div>
+                <div class="field">
+                    <label for="texto">¿Quiénes somos?</label>
+                    <textarea id="texto" name="texto" rows="5" required>{{ equipo.texto }}</textarea>
+                </div>
+                <div class="field">
+                    <label for="objetivo">Objetivo del proyecto</label>
+                    <textarea id="objetivo" name="objetivo" rows="4" required>{{ equipo.objetivo }}</textarea>
+                </div>
+                <div class="field">
+                    <label for="participacion">Mensaje de participación</label>
+                    <textarea id="participacion" name="participacion" rows="3" required>{{ equipo.participacion }}</textarea>
+                </div>
+                <div class="field">
+                    <label for="fotografia">Fotografía del grupo</label>
+                    <input id="fotografia" name="fotografia" type="file" accept=".jpg,.jpeg,.png,.webp">
+                    {% if errors.fotografia %}<small class="error">{{ errors.fotografia }}</small>{% endif %}
+                </div>
+                <button class="pixel-button pixel-button-green" type="submit">GUARDAR CAMBIOS</button>
+            </form>
+        </div>
+    {% else %}
+        <article class="team-card">
+            <div class="team-photo">
+                {% if equipo.fotografia %}
+                    <img src="{{ url_for('uploaded_file', filename='equipo/' + equipo.fotografia) }}" alt="Fotografía del equipo">
+                {% else %}
+                    <div class="photo-placeholder">
+                        <span aria-hidden="true">👥</span>
+                        <p>Fotografía del equipo</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="team-copy">
+                <h2>{{ equipo.titulo }}</h2>
+                <p>{{ equipo.texto }}</p>
+                <h3>Nuestro objetivo</h3>
+                <p>{{ equipo.objetivo }}</p>
+                <blockquote>{{ equipo.participacion }}</blockquote>
+                <a class="pixel-button pixel-button-yellow" href="{{ url_for('reclamos_view') }}">PARTICIPAR</a>
+                <a class="edit-link" href="{{ url_for('editar_sobre_nosotros') }}">Editar presentación</a>
+            </div>
+        </article>
+    {% endif %}
+</section>
+{% endblock %}
