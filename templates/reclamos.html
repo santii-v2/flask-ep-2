@@ -128,15 +128,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }).addTo(map);
 
     const fallbackSpaces = [
-        { name: "Plaza Departamental Las Heras", lat: -32.842, lng: -68.824, type: "plaza" },
-        { name: "Plaza El Plumerillo", lat: -32.835, lng: -68.842, type: "plaza" },
-        { name: "Plaza San Martín", lat: -32.849, lng: -68.823, type: "plaza" },
-        { name: "Espacio verde - Parque Central", lat: -32.832, lng: -68.803, type: "parque" },
-        { name: "Espacio verde - Cruz de Piedra", lat: -32.802, lng: -68.868, type: "verde" },
-        { name: "Espacio verde - El Challao", lat: -32.867, lng: -68.885, type: "verde" },
-        { name: "Parque Marcos Burgos", lat: -32.850109093388724, lng: -68.84077774348505, type: "parque" },
-        { name: "Parque de la Niñez", lat: -32.84125584663903, lng: -68.80262851280186, type: "parque" },
-    ];
+        { name: "Parque de la Familia", lat: -32.845907029489645, lng: -68.85990263241153, type: "parque", },
+        { name: "Parque de la Niñez", lat: -32.84125584663903, lng: -68.80262851280186, type: "parque", },
+        { name: "Parque las Heras", lat: -32.83611166515947, lng: -68.83908386136487, type: "parque", },
+        { name: "Parque historico", lat: -32.84141857682205, lng: -68.81925559290303, type: "parque", },
+        { name: "Plaza Marcos Burgos", lat: -32.84947310713209, lng: -68.84070264438165, type: "Plaza", },
+        { name: "plaza tamarindo", lat: -32.84733084125283, lng: -68.80747173520295, type: "Plaza", },
+        { name: "Plaza San Martin", lat: -32.88727515905886, lng: -68.84055901721543, type: "Plaza",},
+        ];
 
     const icons = {
         plaza: L.divIcon({ className: "green-marker green-marker-plaza", html: "🏛️", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] }),
